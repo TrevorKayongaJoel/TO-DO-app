@@ -1,0 +1,52 @@
+.header {
+  background-color: white;
+  border-bottom: 0px solid #0dc3fa;
+  padding: 1rem 0;
+}
+
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.brand-link {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #222;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: #0a0a0a;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.nav-link:hover {
+  background-color: whitesmoke;
+}
+
+.signup-button {
+  background-color: #0dc3fa;
+  color: white;
+}
+
+.signup-button:hover {
+  background-color: #ff5d8f;
+}
+
+.logo {
+  height: 40px;
+  width: 100px;
+}
