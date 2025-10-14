@@ -62,6 +62,8 @@ class Task(db.Model):
     completed = db.Column(db.Boolean, default=False)
     position = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    due_date = db.Column(db.Date, nullable=True)
+    important = db.Column(db.Boolean, default=False, nullable=False)
 
     def to_dict(self):
         return {
@@ -69,7 +71,9 @@ class Task(db.Model):
             "title": self.title,
             "description": self.description,
             "completed": self.completed,
-            "position": self.position
+            "position": self.position,
+            "due_date": self.due_date.isoformat() if self.due_date else None,
+            "important": self.important
         }
 
 def token_required(f):
@@ -158,13 +162,31 @@ def create_task(current_user):
     data = request.get_json() or {}
     title = data.get("title", "").strip()
     description = data.get("description", "").strip()
+    due_date_str = data.get("due_date")
+    important = data.get("important", False)
+
     if not title:
         return jsonify({"error": "Title is required"}), 400
+
+    due_date = None
+    if due_date_str:
+        try:
+            due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
     max_pos = db.session.query(db.func.max(Task.position)).filter_by(user_id=current_user.id).scalar()
     next_pos = (max_pos or 0) + 1
 
-    t = Task(title=title, description=description, completed=False, position=next_pos, user_id=current_user.id)
+    t = Task(
+        title=title, 
+        description=description, 
+        completed=False, 
+        position=next_pos, 
+        user_id=current_user.id,
+        due_date=due_date,
+        important=important
+    )
     db.session.add(t)
     db.session.commit()
     return jsonify(t.to_dict()), 201
@@ -182,6 +204,17 @@ def update_task(current_user, task_id):
         t.completed = bool(data["completed"])
     if "position" in data:
         t.position = int(data["position"])
+    if "important" in data:
+        t.important = bool(data["important"])
+    if "due_date" in data:
+        due_date_str = data.get("due_date")
+        if due_date_str:
+            try:
+                t.due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
+        else:
+            t.due_date = None
     db.session.commit()
     return jsonify(t.to_dict())
 

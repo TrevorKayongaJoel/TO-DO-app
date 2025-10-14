@@ -55,3 +55,12 @@ div{
 .auth-page a:hover {
   text-decoration: underline;
 }
+
+.register-logo {
+  width: 100px; /* Example size */
+  height: auto; /* Example size */
+  margin-bottom: 20px; /* Space below the logo */
+  display: block; /* Center the image */
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -2,6 +2,7 @@ import API from "../api";
 import TaskItem from "./TaskItem";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
+import styles from './TodoListPage.module.css';
 
 export default function TaskList({ tasks, onChange, onReorder }) {
   const [items, setItems] = useState([]);
@@ -28,16 +29,8 @@ export default function TaskList({ tasks, onChange, onReorder }) {
     onChange();
   };
 
-  const remove = async (id) => {
-    await API.delete(`/tasks/${id}`);
-    onChange();
-  };
-
-  const save = async (updated) => {
-    await API.put(`/tasks/${updated.id}`, {
-      title: updated.title,
-      description: updated.description,
-    });
+  const toggleImportant = async (task) => {
+    await API.put(`/tasks/${task.id}`, { important: !task.important });
     onChange();
   };
 
@@ -45,13 +38,13 @@ export default function TaskList({ tasks, onChange, onReorder }) {
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="list">
         {(provided) => (
-          <ul className="task-list" ref={provided.innerRef} {...provided.droppableProps}>
+          <ul className={styles['task-list']} ref={provided.innerRef} {...provided.droppableProps}>
             {items.map((t, idx) => (
               <Draggable key={t.id} draggableId={String(t.id)} index={idx}>
                 {(prov) => (
-                  <li ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
-                    <TaskItem task={t} onToggle={toggle} onDelete={remove} onSave={save} />
-                  </li>
+                  <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
+                    <TaskItem task={t} onToggle={toggle} onToggleImportant={toggleImportant} />
+                  </div>
                 )}
               </Draggable>
             ))}

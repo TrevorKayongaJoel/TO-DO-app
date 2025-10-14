@@ -31,6 +31,7 @@ export default function RegisterPage() {
 
   return (
     <div className={styles['auth-page']}>
+      <img src="/Picture 2.png" alt="App Logo" className={styles['register-logo']} />
       <h2>Register</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>

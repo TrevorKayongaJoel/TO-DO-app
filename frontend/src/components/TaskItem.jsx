@@ -1,47 +1,24 @@
-import { useState } from "react";
+import styles from './TodoListPage.module.css';
 
-export default function TaskItem({ task, onToggle, onDelete, onSave }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(task.title);
-  const [description, setDescription] = useState(task.description || "");
-
-  const save = async () => {
-    await onSave({ ...task, title, description });
-    setIsEditing(false);
-  };
-
+export default function TaskItem({ task, onToggle, onToggleImportant }) {
   return (
-    <li className="task-item">
-      <div className="left">
+    <li className={styles['task-item']}>
+      <div className={styles['left']}>
         <input
-          type="checkbox"
+          type="radio"
           checked={task.completed}
           onChange={() => onToggle(task)}
         />
-        {isEditing ? (
-          <div className="edit-fields">
-            <input value={title} onChange={(e) => setTitle(e.target.value)} />
-            <input value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-        ) : (
-          <div className="display-fields">
-            <div className={task.completed ? "title done" : "title"}>{task.title}</div>
-            {task.description && <div className="desc">{task.description}</div>}
-          </div>
-        )}
+        <div className={styles['display-fields']}>
+          <div className={`${styles.title} ${task.completed ? styles.done : ''}`}>{task.title}</div>
+          {task.description && <div className={styles.desc}>{task.description}</div>}
+          {task.due_date && <div className={styles.desc}>Due: {new Date(task.due_date).toLocaleDateString()}</div>}
+        </div>
       </div>
-      <div className="actions">
-        {isEditing ? (
-          <>
-            <button onClick={save}>Save</button>
-            <button onClick={() => setIsEditing(false)}>Cancel</button>
-          </>
-        ) : (
-          <>
-            <button onClick={() => setIsEditing(true)}>Edit</button>
-            <button onClick={() => onDelete(task.id)}>❌</button>
-          </>
-        )}
+      <div className={styles['actions']}>
+        <button onClick={() => onToggleImportant(task)} className={styles['star-button']}>
+          {task.important ? '⭐' : '☆'}
+        </button>
       </div>
     </li>
   );
